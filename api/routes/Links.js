@@ -1,45 +1,39 @@
 const router = require("express").Router();
 require("dotenv").config;
 
-let Link = require("../models/Links.model.js");
-let LinkShorter = require("../models/LinkShorter.model.js");
+let LinkModel = require("../models/Links.model.js");
 
-const UpgradeShortenLink = require("../functions/UpgradeShortenLink.js");
+const HashFunction = require("../functions/HashFunction.js");
 const Validator = require("../functions/Validation.js");
 
-router.get("/", (req, res) => {
-  Link.find()
-    .then((links) => res.json(links))
-    .catch((err) => res.status(400).json("Error :" + err));
+router.get("/", async (req, res) => {
+  try {
+    const links = await LinkModel.find();
+    res.json(links);
+  } catch (err) {
+    res.status(400).json("Error :" + err);
+  }
 });
 
 router.post("/add", (req, res) => {
-  console.log(req.body);
   const FullLink = req.body.Link;
+  const ShortenLink = HashFunction(FullLink);
 
-  LinkShorter.find().then((links) => {
-    let ShortenLink = links[0] || new LinkShorter({ code: "AAAAAAAAA" });
+  Validator(FullLink).then((status) => {
+    if (status == 400) {
+      res.status(400).json("Invalid link address");
+    } else {
+      const NewLink = new LinkModel({ FullLink, ShortenLink });
 
-    UpgradeShortenLink(ShortenLink);
-
-    ShortenLink = ShortenLink.code;
-
-    Validator(FullLink).then((status) => {
-      if (status == 400) {
-        res.status(400).json("Invalid link address");
-      } else {
-        const NewLink = new Link({ FullLink, ShortenLink });
-
-        NewLink.save()
-          .then(() => res.json("New Link was added"))
-          .catch((err) => res.status(400).json(err.message));
-      }
-    });
+      NewLink.save()
+        .then(() => res.json("New Link was added"))
+        .catch((err) => res.status(400).json(err.message));
+    }
   });
 });
 
 router.get("/:link", (req, res) => {
-  Link.find({ ShortenLink: req.params.link })
+  LinkModel.find({ ShortenLink: req.params.link })
     .then((link) => {
       res.redirect(link[0].FullLink);
     })

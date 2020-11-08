@@ -4,7 +4,7 @@ require("dotenv").config;
 let LinkModel = require("../models/Links.model.js");
 
 const HashFunction = require("../functions/HashFunction.js");
-const Validator = require("../functions/Validation.js");
+const Validator = require("../functions/Validator.js");
 
 router.get("/", async (req, res) => {
   try {
@@ -19,9 +19,9 @@ router.post("/add", async (req, res) => {
   const FullLink = req.body.Link;
   const ShortenLink = HashFunction(FullLink);
 
-  const status = await Validator(FullLink);
+  const existence = await Validator(FullLink);
 
-  if (status == 400) {
+  if (!existence) {
     res.status(400).json("Invalid link address");
   } else {
     try {

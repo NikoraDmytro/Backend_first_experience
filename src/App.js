@@ -1,29 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const GetLinksFromTheServer = async (SetAllLinks) => {
+const GetAllUserLinks = async (SetAllUserLinks) => {
   const response = await axios.get("http://localhost:5000/");
-  SetAllLinks(response.data);
+
+  SetAllUserLinks(
+    response.data.map((Link) => (
+      <div className="Links">
+        <a href={Link.FullLink}>{Link.FullLink}</a>
+        <br />
+        <a
+          href={Link.FullLink}
+        >{`http://localhost:5000/${Link.ShortenLink}`}</a>
+      </div>
+    ))
+  );
 };
 
-const GetAllUserLinks = () => {
-  const [AllLinks, SetAllLinks] = useState([]);
-
-  GetLinksFromTheServer(SetAllLinks);
-
-  return AllLinks.map((Link) => (
-    <div className="Links">
-      <a href={Link.FullLink}>{Link.FullLink}</a>
-      <br />
-      <a href={Link.FullLink}>{`http://localhost:5000/${Link.ShortenLink}`}</a>
-    </div>
-  ));
-};
-
-const ShortenLink = async (Link) => {
+const ShortenLink = async (UserInput) => {
   try {
-    const response = await axios.post("http://localhost:5000/add", Link);
+    const response = await axios.post("http://localhost:5000/add", UserInput);
 
     console.log(response);
   } catch (err) {
@@ -33,8 +30,11 @@ const ShortenLink = async (Link) => {
 
 function App() {
   const [UserInput, SetUserInput] = useState({});
+  const [AllUserLinks, SetAllUserLinks] = useState(<></>);
 
-  const AllUserLinks = GetAllUserLinks();
+  useEffect(() => {
+    GetAllUserLinks(SetAllUserLinks);
+  }, [AllUserLinks]);
 
   const onChange = (e) => {
     SetUserInput({ Link: e.target.value });

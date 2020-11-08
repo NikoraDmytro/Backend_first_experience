@@ -23,13 +23,14 @@ const HashFunction = (string) => {
   for (let i in string) {
     if (string[i] == "/" && string[i] != "/") {
       index = i + 1;
+      break;
     }
   }
 
   for (let i in string) {
     const charSet = string.toLowerCase().charCodeAt(i);
     if (charSet >= 97 && charSet <= 122 && i > index) {
-      hash += (BigInt(charSet - 97 + 1) * power) % mod;
+      hash = ((hash + BigInt(charSet - 97 + 1) * power) % mod) + 1n;
       power *= P;
       power %= mod;
       while (hash > powerOfSixtyTwo) {
@@ -39,9 +40,8 @@ const HashFunction = (string) => {
   }
 
   let result = "";
-
   while (true) {
-    while (powerOfSixtyTwo > hash) {
+    while ((powerOfSixtyTwo > hash) & (powerOfSixtyTwo !== 1n)) {
       powerOfSixtyTwo /= 62n;
     }
     result += NumbersAndLetters[hash / powerOfSixtyTwo - 1n];

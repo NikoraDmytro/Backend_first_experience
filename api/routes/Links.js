@@ -15,29 +15,31 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/add", (req, res) => {
+router.post("/add", async (req, res) => {
   const FullLink = req.body.Link;
   const ShortenLink = HashFunction(FullLink);
 
-  Validator(FullLink).then((status) => {
-    if (status == 400) {
-      res.status(400).json("Invalid link address");
-    } else {
-      const NewLink = new LinkModel({ FullLink, ShortenLink });
+  const status = await Validator(FullLink);
 
-      NewLink.save()
-        .then(() => res.json("New Link was added"))
-        .catch((err) => res.status(400).json(err.message));
+  if (status == 400) {
+    res.status(400).json("Invalid link address");
+  } else {
+    try {
+      const NewLink = new LinkModel({ FullLink, ShortenLink });
+      NewLink.save();
+    } catch (err) {
+      res.status(400).json(err.message);
     }
-  });
+  }
 });
 
-router.get("/:link", (req, res) => {
-  LinkModel.find({ ShortenLink: req.params.link })
-    .then((link) => {
-      res.redirect(link[0].FullLink);
-    })
-    .catch((err) => res.status(400).json("Error :" + err));
+router.get("/:link", async (req, res) => {
+  try {
+    const link = await LinkModel.findOne({ ShortenLink: req.params.link });
+    res.redirect(link.FullLink);
+  } catch (err) {
+    res.status(400).json("Error :" + err);
+  }
 });
 
 module.exports = router;

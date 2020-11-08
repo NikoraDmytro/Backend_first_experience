@@ -1,66 +1,16 @@
-const NumbersAndLetters = [
-  "0",
-  "1",
-  "2",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "o",
-  "p",
-  "q",
-  "r",
-  "s",
-  "t",
-  "u",
-  "v",
-  "w",
-  "x",
-  "y",
-  "z",
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-];
+const NumbersAndLetters = [];
+
+for (let i = 0; i <= 10; i++) {
+  NumbersAndLetters.push(i);
+}
+
+for (let i = 65; i <= 90; i++) {
+  NumbersAndLetters.push(String.fromCharCode(i));
+}
+
+for (let i = 97; i <= 122; i++) {
+  NumbersAndLetters.push(String.fromCharCode(i));
+}
 
 const HashFunction = (string) => {
   const P = 31n;
@@ -81,6 +31,7 @@ const HashFunction = (string) => {
     if (charSet >= 97 && charSet <= 122 && i > index) {
       hash += (BigInt(charSet - 97 + 1) * power) % mod;
       power *= P;
+      power %= mod;
       while (hash > powerOfSixtyTwo) {
         powerOfSixtyTwo *= 62n;
       }

@@ -1,17 +1,12 @@
 const axios = require("axios");
 
-const Validator = (link) => {
-  let status = new Promise((resolve, reject) => {
-    axios
-      .get(link)
-      .then(() => {
-        resolve(200);
-      })
-      .catch(() => {
-        resolve(400);
-      });
-  });
-  return status;
+const Validator = async (link) => {
+  try {
+    await axios.get(link);
+    return 200;
+  } catch {
+    return 400;
+  }
 };
 
 module.exports = Validator;

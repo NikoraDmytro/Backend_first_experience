@@ -1,6 +1,6 @@
 const NumbersAndLetters = [];
 
-for (let i = 0; i <= 10; i++) {
+for (let i = 0; i <= 9; i++) {
   NumbersAndLetters.push(i);
 }
 
@@ -30,7 +30,7 @@ const HashFunction = (string) => {
   for (let i in string) {
     const charSet = string.toLowerCase().charCodeAt(i);
     if (charSet >= 97 && charSet <= 122 && i > index) {
-      hash = ((hash + BigInt(charSet - 97 + 1) * power) % mod) + 1n;
+      hash = (hash + BigInt(charSet - 97 + 1) * power) % mod;
       power *= P;
       power %= mod;
       while (hash > powerOfSixtyTwo) {
@@ -44,7 +44,7 @@ const HashFunction = (string) => {
     while ((powerOfSixtyTwo > hash) & (powerOfSixtyTwo !== 1n)) {
       powerOfSixtyTwo /= 62n;
     }
-    result += NumbersAndLetters[hash / powerOfSixtyTwo - 1n];
+    result += NumbersAndLetters[hash / powerOfSixtyTwo];
     hash %= powerOfSixtyTwo;
     if (powerOfSixtyTwo == 1) {
       break;

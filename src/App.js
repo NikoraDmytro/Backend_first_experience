@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ErrorHandler } from "./ErrorHandler.js";
 
+const serverAddress = "http://localhost:5000/";
+
 const DeleteLink = async (link) => {
   try {
-    await axios.post("http://localhost:5000/delete", { Link: link });
+    await axios.post(serverAddress + "delete", { Link: link });
   } catch (err) {
     ErrorHandler(err);
   }
@@ -12,20 +14,20 @@ const DeleteLink = async (link) => {
 
 const ShortenLink = async (UserInput) => {
   try {
-    await axios.post("http://localhost:5000/add", UserInput);
+    await axios.post(serverAddress + "add", UserInput);
   } catch (err) {
     ErrorHandler(err);
   }
 };
 
 function App() {
-  const [UserInput, SetUserInput] = useState({});
+  const [UserInput, SetUserInput] = useState({ Link: "" });
   const [AllUserLinks, SetAllUserLinks] = useState([]);
 
   useEffect(() => {
     const GetAllUserLinks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/");
+        const response = await axios.get(serverAddress);
 
         SetAllUserLinks(response.data);
       } catch (err) {
@@ -38,15 +40,13 @@ function App() {
 
   const onChange = (e) => {
     SetUserInput({ Link: e.target.value });
-    const input = document.getElementById("LinkInput");
-    input.placeholder = "Write the link here";
-    input.className = "";
+    e.target.placeholder = "Write the link here";
+    e.target.className = "";
   };
 
   const onClick = () => {
+    SetUserInput({ Link: "" });
     ShortenLink(UserInput);
-    const input = document.getElementById("LinkInput");
-    input.value = "";
   };
 
   return (
@@ -55,6 +55,7 @@ function App() {
         <input
           id="LinkInput"
           onChange={(e) => onChange(e)}
+          value={UserInput.Link}
           placeholder="Write the link here"
         />
         <button onClick={() => onClick()}>Reduce</button>
@@ -64,9 +65,7 @@ function App() {
           <button onClick={() => DeleteLink(Link.FullLink)} />
           <a href={Link.FullLink}>{Link.FullLink}</a>
           <br />
-          <a
-            href={Link.FullLink}
-          >{`http://localhost:5000/${Link.ShortenLink}`}</a>
+          <a href={Link.FullLink}>{serverAddress + Link.ShortenLink}</a>
         </div>
       ))}
     </main>
